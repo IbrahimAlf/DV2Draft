@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Australia Climate Change Vis Portal</title>
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+</head>
+
+<body>
+    <header>
+        <h1>Australia Climate Change Vis Portal</h1>
+        <nav>
+            <ul>
+                <li><a href="#historical">Historical climate</a></li>
+                <li><a href="#Reagional">Weather Station Data</a></li>
+                <li><a href="#Future">What Future Hold</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section id="historical" class="mycard">
+        <h3>Australia's historical climate</h3>
+        <p>Welcome to the Weather Change Visualization page. Here you can find visualizations of weather data over time.
+            <a
+                href="https://www.climatechangeinaustralia.gov.au/en/obtain-data/download-datasets/#ARD-Stn">DataSource</a>
+        </p>
+        <p>Discover historical and future climate data, sector-specific climate information, impacts, key
+            vulnerabilities,
+            and the adaptation measures being implemented. Check out the overview for a comprehensive understanding of
+            how
+            climate change is influencing various aspects.</p>
+        <p>
+            This section provides an overview of Australia’s climate for the period 1991-2020, based on observed
+            historical data. This information is essential for understanding current climate conditions and for
+            anticipating future
+            climate scenarios and changes.
+        </p>
+    </section>
+    <section id="historicalGraph">
+        <div class="row">
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <div class="col-12 mycard">
+                    <p>Observed Anual Average mean surface air tempurate of Australia (1901-2020)</p>
+                    <div style="width: 100%;" id="vis01"></div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <div class="col-12 mycard">
+                    <p>Observed Average Seasonal Min,Max and Mean Temperature Australia over the last 120 years</p>
+                    <div style="width: 100%;" id="vis02"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="Reagional" class="mycard">
+        <h3>Get Regional Details </h3>
+        <p>
+            This section provides and interactive georaphical map for all the weather stations to observe average max
+            tempurature.
+
+        </p>
+    </section>
+    <section id="ReagionalGraph">
+        <div class="row">
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <div class="col-12 mycard">
+                    <p>Click on data point to view max tempurature for particular location.</p>
+                    <div style="width: 100%;" id="vis11"></div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <div class="col-12 mycard">
+                    <p> Average max surface air tempurate of Selected Location (1975-2020) </p>
+                    <div style="width: 100%;" id="vis12"></div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="Future" class="mycard">
+        <h3>Future Pridiction </h3>
+        <p>
+            This section provides an overview of Australia’s climate for the period 2020-2100, based on pridiction
+            model.
+            This information is essential for understanding current climate conditions and for anticipating future
+            climate scenarios and changes.
+        </p>
+    </section>
+    <section id="FutureGraph">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="col-12 mycard">
+                    <p>Australia Historical mean tempurature along with future pridiction.</p>
+                    <div style="width: 100%;" id="vis21"></div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <footer>
+        <p>© 2024 Australia Climate Change Vis Portal. All rights reserved.</p>
+    </footer>
+
+    <script type="text/javascript">
+        
+        // ------------------------------------------------------------------
+        var AnualTempDataGraph = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "description": "Google's stock price over time.",
+            "data": {
+                "url": "Data/AusMeanSurfaceTemp.csv"
+            },
+            "mark": {
+                "type": "line",
+                "line": true,
+                "point": true
+            },
+            "encoding": {
+                "x": {
+                    "title": "Year",
+                    "field": "Category",
+                    "type": "temporal",
+
+                },
+                "y": {
+                    "field": "Annual Mean",
+                    "type": "quantitative",
+                    "scale": {
+                        "domain": [27, 31]
+                    }
+                }
+            },
+            "width": 1000,
+            "height": 500,
+            "config": {
+                "axis": {
+                    "labelFontSize": 14,
+                    "titleFontSize": 16
+                }
+            }
+        }
+        vegaEmbed('#vis01', AnualTempDataGraph);
+
+        var SeassionalMeanTempGraph = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "data": {
+                "url": "Data/SeassionalMeanTemp.csv"
+            },
+            "params": [{
+                "name": "selectValue",
+                "value": "Mean",
+                "bind": {
+                    "input": "select",
+                    "options": ["Min", "Max", "Mean"],
+                    "labels": ["Minimum Tempurature", "Maximum Tempurature", "Mean Tempurature"],
+                    "title": "Select Category",
+                    "labelFontSize": 14,
+                    "titleFontSize": 16
+                }
+            }],
+            "transform": [{
+                "filter": {
+                    "field": "DataType",
+                    "equal": {
+                        "expr": "selectValue"
+                    }
+                }
+            }],
+            "repeat": {
+                "layer": ["DJF", "MAM", "JJA", "SON"]
+            },
+            "spec": {
+                "mark": {
+                    "type": "bar",
+                    "tooltip": true
+                },
+                "encoding": {
+                    "x": {
+                        "field": "CLIMATOLOGY",
+                        "type": "nominal"
+                    },
+                    "y": {
+                        "aggregate": "sum",
+                        "field": {
+                            "repeat": "layer"
+                        },
+                        "type": "quantitative",
+                        "title": "Tempurature",
+                    },
+                    "color": {
+                        "datum": {
+                            "repeat": "layer"
+                        },
+                        "title": "Seasson Months"
+                    },
+                    "xOffset": {
+                        "datum": {
+                            "repeat": "layer"
+                        }
+                    },
+                }
+            },
+            "config": {
+                "mark": {
+                    "invalid": null
+                },
+                "axis": {
+                    "labelFontSize": 14,
+                    "titleFontSize": 16
+                },
+                "legend": {
+                    "labelFontSize": 16,
+                    "titleFontSize": 16
+                }
+            },
+            "width": 1000,
+            "height": 500
+        };
+        vegaEmbed('#vis02', SeassionalMeanTempGraph);
+        // -------------------------------------------------------------------
+        var myFunciton;
+        var map = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "description": "A map of Australia showing its states and territories.",
+            "width": 'container',
+            "height": 350,
+            "layer": [{
+                    "data": {
+                        "url": "Data/australia.json",
+                        "format": {
+                            "property": "features"
+                        }
+                    },
+                    "mark": "geoshape",
+                    "encoding": {
+                        "color": {
+                            "field": "properties.STATE_NAME",
+                            "type": "nominal",
+                            "title": "State"
+                        },
+                        "tooltip": {
+                            "field": "properties.STATE_NAME",
+                            "type": "nominal",
+                            "title": "State"
+                        }
+                    },
+                    "projection": {
+                        "type": "mercator"
+                    }
+                },
+                {
+                    "data": {
+                        "url": "Data/AustralianAverageMaxTemp.csv"
+                    },
+                    "params": [{
+                        "name": "mySelection",
+                        "select": {
+                            "type": "point",
+                            "on": "click"
+                        }
+                        // "select": "point"
+                    }],
+                    "projection": {
+                        "type": "mercator"
+                    },
+                    "mark": "circle",
+                    "encoding": {
+                        "longitude": {
+                            "field": "long",
+                            "type": "quantitative"
+                        },
+                        "latitude": {
+                            "field": "lat",
+                            "type": "quantitative"
+                        },
+                        "tooltip": {
+                            "field": "name",
+                            "type": "nominal"
+                        },
+                        "size": {
+                            "condition": [{
+                                "param": "mySelection",
+                                "empty": false,
+                                "value": 800
+                            }],
+                            "value": 70
+                        }
+                    },
+
+                }
+            ],
+            "config": {
+                "legend": {
+                    "labelFontSize": 12,
+                    "titleFontSize": 14
+                }
+            }
+        };
+
+        var AvgTempuratureCitiesGraph = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "description": "Avg Tempurature of Cities over Time.",
+            "data": {
+                "url": "Data/AustralianAverageMaxTemp.csv",
+
+            },
+            "params": [{
+                    "name": "name",
+                    "select": {
+                        "type": "point",
+                        "fields": ["name"]
+                    },
+                    "bind": "legend"
+                },
+                {
+                    "name": "selectedPoint",
+                    "value": "BARCALDINE"
+                }
+            ],
+            "transform": [{
+                "filter": {
+                    "field": "name",
+                    "equal": {
+                        "expr": "selectedPoint"
+                    }
+                }
+            }],
+            "mark": {
+                "type": "line",
+                "point": true
+            },
+            "encoding": {
+                "x": {
+                    "field": "Year"
+                },
+                "y": {
+                    "field": "Temp",
+                    "type": "quantitative",
+                    "scale": {
+                        "domain": [10, 41]
+                    }
+                },
+                "color": {
+                    "field": "name",
+                    "type": "nominal"
+                },
+                "opacity": {
+                    "condition": {
+                        "param": "name",
+                        "value": 1
+                    },
+                    "value": 0.2
+                }
+            },
+            "width": 800,
+            "height": 500,
+            "config": {
+                "axis": {
+                    "labelFontSize": 14,
+                    "titleFontSize": 16
+                },
+                "legend": {
+                    "labelFontSize": 14,
+                    "titleFontSize": 16
+                }
+            }
+        };
+
+        vegaEmbed('#vis11', map).then(function (result) {
+            // Access the Vega view instance
+            var view = result.view;
+
+            // Add an event listener to log selected data
+            view.addEventListener('click', function (event, item) {
+                var selectedData = item.tooltip;
+                console.log('Selected Data:', selectedData);
+                myFunciton(selectedData);
+            });
+        }).catch(console.error);
+
+        vegaEmbed('#vis12', AvgTempuratureCitiesGraph).then(function (result) {
+            // Access the Vega view instance
+            var view = result.view;
+
+            // Function to update the parameter with external data
+            myFunciton = function updateParameter(newValue) {
+                view.signal('selectedPoint', newValue).run();
+            }
+
+        });
+        // ------------------------------------------------------------------
+        var future = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "description": "A multi-series line chart showing values over time.",
+            "data": {
+                "url": "Data/AusFutureTemp.csv",
+                "format": {
+                    "type": "csv"
+                }
+            },
+            "params": [{
+                "name": "category",
+                "select": {
+                    "type": "point",
+                    "fields": ["key"]
+                },
+                "bind": "legend"
+            }],
+            "transform": [{
+                "fold": ["Historical1995-2014", "2020-2039", "2040-2059", "2060-2079", "2080-2099"],
+                "as": ["key", "value"]
+            }],
+            "mark": "line",
+            "encoding": {
+                "x": {
+                    "field": "month",
+                    "type": "nominal",
+                    "title": "month"
+                },
+                "y": {
+                    "field": "value",
+                    "type": "quantitative",
+                    "title": "Mean Tempurature",
+                    "scale": {
+                        "domain": [10, 40]
+                    }
+                },
+                "color": {
+                    "field": "key",
+                    "type": "nominal",
+                    "title": "Duration"
+                },
+                "opacity": {
+                    "condition": {
+                        "param": "category",
+                        "value": 1
+                    },
+                    "value": 0.2
+                }
+            },
+            "width": 1200,
+            "height": 300,
+            "config": {
+                "axis": {
+                    "labelFontSize": 14,
+                    "titleFontSize": 16
+                },
+                "legend": {
+                    "labelFontSize": 14,
+                    "titleFontSize": 16
+                }
+            }
+        };
+
+        vegaEmbed('#vis21', future)
+    </script>
+</body>
+
+</html>
